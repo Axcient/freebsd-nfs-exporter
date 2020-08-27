@@ -1,0 +1,18 @@
+[package]
+name = "nfs-exporter"
+description = "Prometheus exporter for FreeBSD NFS stats"
+version = "0.1.0"
+authors = ["Alan Somers <asomers@axcient.com>"]
+edition = "2018"
+repository = "https://github.com/Axcient/nfs-exporter.git"
+keywords = ["prometheus", "monitoring", "nfs", "freebsd"]
+exclude = [
+    "/.gitignore",
+    "bindgen.*"
+]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+prometheus_exporter = "0.6"
+env_logger = "0.7"
