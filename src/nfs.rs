@@ -1,9 +1,10 @@
 use std::{
     io::{Error, Result},
-    mem,
     os::raw::c_void
 };
 
+#[allow(non_camel_case_types)]
+#[allow(dead_code)]
 mod ffi;
 
 fn bintime_to_ns(bintime: &ffi::bintime) -> u64 {
