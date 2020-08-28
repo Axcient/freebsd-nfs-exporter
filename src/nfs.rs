@@ -6,8 +6,30 @@ use std::{
 
 mod ffi;
 
+fn bintime_to_ns(bintime: &ffi::bintime) -> u64 {
+    (bintime.sec as u64).wrapping_mul(1_000_000_000)
+    .wrapping_add(bintime.frac / (1 << 30) / ((1 << 34) / 1_000_000_000))
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct NfsBytes {
+    pub read: u64,
+    pub write: u64,
+}
+
+/// Cumulative duration spent processing each operation, in nanoseconds.
+/// May wrap!
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct NfsDuration {
+    pub read: u64,
+    pub write: u64,
+    pub commit: u64,
+}
+
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct NfsStat {
+    pub bytes: NfsBytes,
+    pub duration: NfsDuration,
     pub access: u64,
     pub backchannelctrl: u64,
     pub bindconntosess: u64,
@@ -78,19 +100,25 @@ pub struct NfsStat {
 pub fn collect() -> Result<NfsStat> {
     let mut raw = ffi::nfsstatsv1::default();
     raw.vers = ffi::NFSSTATS_V1 as i32;
-	//let mut raw = mem::MaybeUninit::<ffi::nfsstatsv1>::uninit();
     let flag = ffi::NFSSVC_GETSTATS | ffi::NFSSVC_NEWSTRUCT;
 	let raw = unsafe {
         let r = ffi::nfssvc(flag as i32, &mut raw as *mut  _ as *mut c_void);
-        //let r = ffi::nfssvc(flag, raw.as_mut_ptr() as *mut c_void);
         if r != 0 {
             return Err(Error::last_os_error());
         }
         raw
-        //raw.assume_init()
     };
-    //dbg!(&raw);
+    let duration = NfsDuration {
+        read: bintime_to_ns(&raw.srvduration[ffi::NFSV4OP_READ as usize]),
+        write: bintime_to_ns(&raw.srvduration[ffi::NFSV4OP_WRITE as usize]),
+        commit: bintime_to_ns(&raw.srvduration[ffi::NFSV4OP_COMMIT as usize]),
+    };
 	Ok(NfsStat{
+        bytes: NfsBytes {
+            read: raw.srvbytes[ffi::NFSV4OP_READ as usize],
+            write: raw.srvbytes[ffi::NFSV4OP_WRITE as usize],
+        },
+        duration,
         access: raw.srvrpccnt[ffi::NFSV4OP_ACCESS as usize],
         backchannelctrl: raw.srvrpccnt[ffi::NFSV4OP_BACKCHANNELCTL as usize],
         bindconntosess: raw.srvrpccnt[ffi::NFSV4OP_BINDCONNTOSESS as usize],

@@ -31,6 +31,14 @@ fn main() {
     // Create metrics
     // Even though these are gauge, we use the Gauge API since the kernel
     // reports their current values.
+    let bytes = register_int_gauge_vec!("nfs_nfsd_total_bytes",
+                                        "Total nfsd bytes per operation",
+                                        &["method"])
+        .expect("can not create gauge");
+    let duration = register_int_gauge_vec!("nfs_nfsd_total_duration",
+        "Total nfsd time spend processing each operation.  May wrap.",
+        &["method"])
+        .expect("can not create gauge");
     let rpcs = register_int_gauge_vec!("nfs_nfsd_requests_total",
                                        "Count of server RPCs",
                                        &["method"])
@@ -43,76 +51,86 @@ fn main() {
         // Update metric with random value.
         let nfs_stat = nfs::collect().unwrap();
 
-        macro_rules! set_gauge {
+        macro_rules! set_rpcs {
             ($label:ident, $field:ident) => {
                 rpcs.with_label_values(&[stringify!($label)])
                     .set(nfs_stat.$field.try_into().unwrap());
             };
         }
 
-        set_gauge!(Access, access);
-        set_gauge!(BackChannelCtl, backchannelctrl);
-        set_gauge!(BindConnToSess, bindconntosess);
-        set_gauge!(Close, close);
-        set_gauge!(Commit, commit);
-        set_gauge!(Create, v3create);
-        set_gauge!(CreateSession, createsess);
-        set_gauge!(CreateV4, create);
-        set_gauge!(DelegPurge, delegpurge);
-        set_gauge!(DelegReturn, delegreturn);
-        set_gauge!(DestroyClientId, destroyclid);
-        set_gauge!(DestroySession, destroysess);
-        set_gauge!(ExchangeId, exchangeid);
-        set_gauge!(FreeStateId, freestateid);
-        set_gauge!(FsInfo, fsinfo);
-        set_gauge!(FsStat, fsstat);
-        set_gauge!(GetAttr, getattr);
-        set_gauge!(GetDevInfo, getdevinfo);
-        set_gauge!(GetDevList, getdevlist);
-        set_gauge!(GetDirDeleg, getdirdeleg);
-        set_gauge!(GetFH, getfh);
-        set_gauge!(LayoutCommit, layoutcommit);
-        set_gauge!(LayoutGet, layoutget);
-        set_gauge!(LayoutReturn, layoutreturn);
-        set_gauge!(Link, link);
-        set_gauge!(Lock, lock);
-        set_gauge!(LockT, lockt);
-        set_gauge!(LockU, locku);
-        set_gauge!(Lookup, lookup);
-        set_gauge!(LookupP, lookupp);
-        set_gauge!(MkDir, mkdir);
-        set_gauge!(MkNod, mknod);
-        set_gauge!(Nverify, nverify);
-        set_gauge!(Open, open);
-        set_gauge!(OpenAttr, openattr);
-        set_gauge!(OpenConfirm, openconfirm);
-        set_gauge!(OpenDgrd, opendgrd);
-        set_gauge!(PathConf, pathconf);
-        set_gauge!(PutFH, putfh);
-        set_gauge!(Read, read);
-        set_gauge!(ReadDir, readdir);
-        set_gauge!(ReadDirPlus, readdirplus);
-        set_gauge!(ReadLink, readlink);
-        set_gauge!(ReclaimCompl, reclaimcompl);
-        set_gauge!(RelLockOwner, rellckown);
-        set_gauge!(Remove, remove);
-        set_gauge!(Rename, rename);
-        set_gauge!(Renew, renew);
-        set_gauge!(RestoreFH, restorefh);
-        set_gauge!(RmDir, rmdir);
-        set_gauge!(SaveFH, savefh);
-        set_gauge!(SecInfo, secinfo);
-        set_gauge!(SecInfoNoName, secinfononame);
-        set_gauge!(Sequence, sequence);
-        set_gauge!(SetAttr, setattr);
-        set_gauge!(SetClientId, setclid);
-        set_gauge!(SetClientIdConfirm, setclidcf);
-        set_gauge!(SetSSV, setssv);
-        set_gauge!(SymLink, symlink);
-        set_gauge!(TestStateId, teststateid);
-        set_gauge!(Verify, verify);
-        set_gauge!(WantDeleg, wantdeleg);
-        set_gauge!(Write, write);
+        bytes.with_label_values(&["read"])
+            .set(nfs_stat.bytes.read.try_into().unwrap());
+        bytes.with_label_values(&["write"])
+            .set(nfs_stat.bytes.write.try_into().unwrap());
+        duration.with_label_values(&["read"])
+            .set(nfs_stat.duration.read.try_into().unwrap());
+        duration.with_label_values(&["write"])
+            .set(nfs_stat.duration.write.try_into().unwrap());
+        duration.with_label_values(&["commit"])
+            .set(nfs_stat.duration.commit.try_into().unwrap());
+        set_rpcs!(Access, access);
+        set_rpcs!(BackChannelCtl, backchannelctrl);
+        set_rpcs!(BindConnToSess, bindconntosess);
+        set_rpcs!(Close, close);
+        set_rpcs!(Commit, commit);
+        set_rpcs!(Create, v3create);
+        set_rpcs!(CreateSession, createsess);
+        set_rpcs!(CreateV4, create);
+        set_rpcs!(DelegPurge, delegpurge);
+        set_rpcs!(DelegReturn, delegreturn);
+        set_rpcs!(DestroyClientId, destroyclid);
+        set_rpcs!(DestroySession, destroysess);
+        set_rpcs!(ExchangeId, exchangeid);
+        set_rpcs!(FreeStateId, freestateid);
+        set_rpcs!(FsInfo, fsinfo);
+        set_rpcs!(FsStat, fsstat);
+        set_rpcs!(GetAttr, getattr);
+        set_rpcs!(GetDevInfo, getdevinfo);
+        set_rpcs!(GetDevList, getdevlist);
+        set_rpcs!(GetDirDeleg, getdirdeleg);
+        set_rpcs!(GetFH, getfh);
+        set_rpcs!(LayoutCommit, layoutcommit);
+        set_rpcs!(LayoutGet, layoutget);
+        set_rpcs!(LayoutReturn, layoutreturn);
+        set_rpcs!(Link, link);
+        set_rpcs!(Lock, lock);
+        set_rpcs!(LockT, lockt);
+        set_rpcs!(LockU, locku);
+        set_rpcs!(Lookup, lookup);
+        set_rpcs!(LookupP, lookupp);
+        set_rpcs!(MkDir, mkdir);
+        set_rpcs!(MkNod, mknod);
+        set_rpcs!(Nverify, nverify);
+        set_rpcs!(Open, open);
+        set_rpcs!(OpenAttr, openattr);
+        set_rpcs!(OpenConfirm, openconfirm);
+        set_rpcs!(OpenDgrd, opendgrd);
+        set_rpcs!(PathConf, pathconf);
+        set_rpcs!(PutFH, putfh);
+        set_rpcs!(Read, read);
+        set_rpcs!(ReadDir, readdir);
+        set_rpcs!(ReadDirPlus, readdirplus);
+        set_rpcs!(ReadLink, readlink);
+        set_rpcs!(ReclaimCompl, reclaimcompl);
+        set_rpcs!(RelLockOwner, rellckown);
+        set_rpcs!(Remove, remove);
+        set_rpcs!(Rename, rename);
+        set_rpcs!(Renew, renew);
+        set_rpcs!(RestoreFH, restorefh);
+        set_rpcs!(RmDir, rmdir);
+        set_rpcs!(SaveFH, savefh);
+        set_rpcs!(SecInfo, secinfo);
+        set_rpcs!(SecInfoNoName, secinfononame);
+        set_rpcs!(Sequence, sequence);
+        set_rpcs!(SetAttr, setattr);
+        set_rpcs!(SetClientId, setclid);
+        set_rpcs!(SetClientIdConfirm, setclidcf);
+        set_rpcs!(SetSSV, setssv);
+        set_rpcs!(SymLink, symlink);
+        set_rpcs!(TestStateId, teststateid);
+        set_rpcs!(Verify, verify);
+        set_rpcs!(WantDeleg, wantdeleg);
+        set_rpcs!(Write, write);
 
         // Notify exporter that all metrics have been updated so the caller client can
         // receive a response.
