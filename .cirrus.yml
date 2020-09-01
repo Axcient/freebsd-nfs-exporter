@@ -6,10 +6,10 @@ task:
   matrix:
     - name: cargo test (nightly)
       env:
-        VERSION: +nightly
+        VERSION: nightly
     - name: cargo test (1.44.0)
       env:
-        VERSION: +1.44.0
+        VERSION: 1.44.0
   setup_script:
     - fetch https://sh.rustup.rs -o rustup.sh
     - sh rustup.sh -y --profile=minimal --default-toolchain ${VERSION}-x86_64-unknown-freebsd
@@ -18,4 +18,4 @@ task:
     fingerprint_script: cat Cargo.lock || echo ""
   build_script:
     - . $HOME/.cargo/env
-    - cargo $VERSION build $CARGO_ARGS --all
+    - cargo +$VERSION build $CARGO_ARGS --all
