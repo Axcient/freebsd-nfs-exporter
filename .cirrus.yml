@@ -2,7 +2,6 @@ freebsd_instance:
   image: freebsd-12-1-release-amd64
 
 task:
-  use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   matrix:
     - name: cargo test (nightly)
       env:
