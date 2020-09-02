@@ -35,7 +35,7 @@ pub struct NfsStat {
     pub startcnt: u64,
     /// Total number of operations that have completed since boot
     pub donecnt: u64,
-    /// Total time in ns that nfs was busy with at least one operation.
+    /// Total time in ns that nfsd was busy with at least one operation.
     /// May wrap!
     pub busytime: u64,
     pub access: u64,
