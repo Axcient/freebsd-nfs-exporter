@@ -3,6 +3,7 @@ name = "freebsd-nfs-exporter"
 description = "Prometheus exporter for FreeBSD NFS stats"
 version = "0.1.0"
 authors = ["Alan Somers <asomers@axcient.com>"]
+license = "MIT/Apache-2.0"
 edition = "2018"
 repository = "https://github.com/Axcient/freebsd-nfs-exporter.git"
 keywords = ["prometheus", "monitoring", "nfs", "freebsd"]
