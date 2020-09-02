@@ -1,17 +1,19 @@
 [package]
-name = "nfs-exporter"
+name = "freebsd-nfs-exporter"
 description = "Prometheus exporter for FreeBSD NFS stats"
 version = "0.1.0"
 authors = ["Alan Somers <asomers@axcient.com>"]
 edition = "2018"
-repository = "https://github.com/Axcient/nfs-exporter.git"
+repository = "https://github.com/Axcient/freebsd-nfs-exporter.git"
 keywords = ["prometheus", "monitoring", "nfs", "freebsd"]
 exclude = [
     "/.gitignore",
     "bindgen.*"
 ]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "nfs-exporter"
+path = "src/main.rs"
 
 [dependencies]
 clap = "2.0"
