@@ -8,7 +8,10 @@ use env_logger::{
 use prometheus_exporter::{
     FinishedUpdate,
     PrometheusExporter,
-    prometheus::register_int_gauge_vec,
+    prometheus::{
+        register_int_gauge,
+        register_int_gauge_vec,
+    }
 };
 use std::{
     convert::TryInto,
@@ -78,6 +81,16 @@ fn main() {
                                        "Count of server RPCs",
                                        &["method"])
         .expect("can not create gauge");
+    let startcnt = register_int_gauge!("nfs_nfsd_start_count",
+        "Total number of opreations started since boot")
+        .expect("can not create gauge");
+    let donecnt = register_int_gauge!("nfs_nfsd_done_count",
+        "Total number of opreations completed since boot")
+        .expect("can not create gauge");
+    let busytime = register_int_gauge!("nfs_nfsd_busytime",
+        "Total time in ns that nfsd was busy with at least one opeartion")
+        .expect("can not create gauge");
+
 
     loop {
         // Will block until exporter receives http request.
@@ -104,6 +117,9 @@ fn main() {
                 .set(nfs_stat.duration.write.try_into().unwrap());
             duration.with_label_values(&["commit"])
                 .set(nfs_stat.duration.commit.try_into().unwrap());
+            startcnt.set(nfs_stat.startcnt.try_into().unwrap());
+            donecnt.set(nfs_stat.donecnt.try_into().unwrap());
+            busytime.set(nfs_stat.busytime.try_into().unwrap());
             set_rpcs!(Access, access);
             set_rpcs!(BackChannelCtl, backchannelctrl);
             set_rpcs!(BindConnToSess, bindconntosess);
