@@ -74,7 +74,7 @@ fn main() {
                                         &["method"])
         .expect("can not create gauge");
     let duration = register_int_gauge_vec!("nfs_nfsd_total_duration",
-        "Total nfsd time spend processing each operation.  May wrap.",
+        "Total nfsd nanoseconds spend processing each operation.  May wrap.",
         &["method"])
         .expect("can not create gauge");
     let rpcs = register_int_gauge_vec!("nfs_nfsd_requests_total",
@@ -107,15 +107,15 @@ fn main() {
                 };
             }
 
-            bytes.with_label_values(&["read"])
+            bytes.with_label_values(&["Read"])
                 .set(nfs_stat.bytes.read.try_into().unwrap());
-            bytes.with_label_values(&["write"])
+            bytes.with_label_values(&["Write"])
                 .set(nfs_stat.bytes.write.try_into().unwrap());
-            duration.with_label_values(&["read"])
+            duration.with_label_values(&["Read"])
                 .set(nfs_stat.duration.read.try_into().unwrap());
-            duration.with_label_values(&["write"])
+            duration.with_label_values(&["Write"])
                 .set(nfs_stat.duration.write.try_into().unwrap());
-            duration.with_label_values(&["commit"])
+            duration.with_label_values(&["Commit"])
                 .set(nfs_stat.duration.commit.try_into().unwrap());
             startcnt.set(nfs_stat.startcnt.try_into().unwrap());
             donecnt.set(nfs_stat.donecnt.try_into().unwrap());
