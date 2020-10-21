@@ -103,7 +103,7 @@ fn main() {
             macro_rules! set_rpcs {
                 ($label:ident, $field:ident) => {
                     rpcs.with_label_values(&[stringify!($label)])
-                        .set(nfs_stat.$field.try_into().unwrap());
+                        .set(nfs_stat.server_rpcs.$field.try_into().unwrap());
                 };
             }
 

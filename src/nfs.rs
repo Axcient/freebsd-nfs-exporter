@@ -25,19 +25,9 @@ pub struct PerRWC {
     pub commit: u64,
 }
 
+/// Counts of every RPC processed
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
-pub struct NfsStat {
-    pub bytes: PerRW,
-    /// Cumulative duration spent processing each operation, in nanoseconds.
-    /// May wrap!
-    pub duration: PerRWC,
-    /// Total number of operations that have been started since boot
-    pub startcnt: u64,
-    /// Total number of operations that have completed since boot
-    pub donecnt: u64,
-    /// Total time in ns that nfsd was busy with at least one operation.
-    /// May wrap!
-    pub busytime: u64,
+pub struct PerRPC {
     pub access: u64,
     pub backchannelctrl: u64,
     pub bindconntosess: u64,
@@ -105,6 +95,24 @@ pub struct NfsStat {
     pub write: u64,
 }
 
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct NfsStat {
+    /// Total time in ns that nfsd was busy with at least one operation.
+    /// May wrap!
+    pub busytime: u64,
+    /// Total bytes processed by each operation
+    pub bytes: PerRW,
+    /// Total number of operations that have completed since boot
+    pub donecnt: u64,
+    /// Cumulative duration spent processing each operation, in nanoseconds.
+    /// May wrap!
+    pub duration: PerRWC,
+    /// Count of each RPC processed by the server
+    pub server_rpcs: PerRPC,
+    /// Total number of operations that have been started since boot
+    pub startcnt: u64,
+}
+
 pub fn collect() -> Result<NfsStat> {
     let mut raw = ffi::nfsstatsv1::default();
     raw.vers = ffi::NFSSTATS_V1 as i32;
@@ -116,20 +124,16 @@ pub fn collect() -> Result<NfsStat> {
         }
         raw
     };
+    let bytes = PerRW {
+        read: raw.srvbytes[ffi::NFSV4OP_READ as usize],
+        write: raw.srvbytes[ffi::NFSV4OP_WRITE as usize],
+    };
     let duration = PerRWC {
         read: bintime_to_ns(&raw.srvduration[ffi::NFSV4OP_READ as usize]),
         write: bintime_to_ns(&raw.srvduration[ffi::NFSV4OP_WRITE as usize]),
         commit: bintime_to_ns(&raw.srvduration[ffi::NFSV4OP_COMMIT as usize]),
     };
-	Ok(NfsStat{
-        bytes: PerRW {
-            read: raw.srvbytes[ffi::NFSV4OP_READ as usize],
-            write: raw.srvbytes[ffi::NFSV4OP_WRITE as usize],
-        },
-        duration,
-        startcnt: raw.srvstartcnt,
-        donecnt: raw.srvdonecnt,
-        busytime: bintime_to_ns(&raw.busytime),
+    let server_rpcs = PerRPC {
         access: raw.srvrpccnt[ffi::NFSV4OP_ACCESS as usize],
         backchannelctrl: raw.srvrpccnt[ffi::NFSV4OP_BACKCHANNELCTL as usize],
         bindconntosess: raw.srvrpccnt[ffi::NFSV4OP_BINDCONNTOSESS as usize],
@@ -195,5 +199,13 @@ pub fn collect() -> Result<NfsStat> {
         verify: raw.srvrpccnt[ffi::NFSV4OP_VERIFY as usize],
         wantdeleg: raw.srvrpccnt[ffi::NFSV4OP_WANTDELEG as usize],
         write: raw.srvrpccnt[ffi::NFSV4OP_WRITE as usize],
+    };
+	Ok(NfsStat{
+        bytes,
+        duration,
+        startcnt: raw.srvstartcnt,
+        donecnt: raw.srvdonecnt,
+        busytime: bintime_to_ns(&raw.busytime),
+        server_rpcs
     })
 }
