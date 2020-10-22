@@ -110,7 +110,7 @@ fn main() {
         .expect("can not create gauge");
 
     let clients = register_int_gauge!("nfs_nfsd_clients",
-        "Number of connected NFS v4.0+ clients")
+        "Number of connected NFS v4.x clients")
         .expect("can not create gauge");
     let delegs = register_int_gauge!("nfs_nfsd_delegations",
         "Number of active NFS delegations")
@@ -126,7 +126,7 @@ fn main() {
         "Number of active NFS v4.0 Open Owners")
         .expect("can not create gauge");
     let opens = register_int_gauge!("nfs_nfsd_opens",
-        "Number of NFS v4.0+ open files?")
+        "Number of NFS v4.x open files?")
         .expect("can not create gauge");
     // Don't publish server_misc.retfailed.  As of this writing, it is always 0.
 
