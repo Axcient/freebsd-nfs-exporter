@@ -90,7 +90,26 @@ fn main() {
     let busytime = register_int_gauge!("nfs_nfsd_busytime",
         "Total time in ns that nfsd was busy with at least one opeartion")
         .expect("can not create gauge");
-
+    let clients = register_int_gauge!("nfs_nfsd_clients",
+        "Number of connected NFS v4.0+ clients")
+        .expect("can not create gauge");
+    let delegs = register_int_gauge!("nfs_nfsd_delegations",
+        "Number of active NFS delegations")
+        .expect("can not create gauge");
+    // Don't publish server_misc.faults.  As of this writing, it is always 0.
+    let lock_owner = register_int_gauge!("nfs_nfsd_lock_owners",
+        "Number of active NFS lock owners")
+        .expect("can not create gauge");
+    let locks = register_int_gauge!("nfs_nfsd_locks",
+        "Number of active NFS locks")
+        .expect("can not create gauge");
+    let open_owner = register_int_gauge!("nfs_nfsd_open_owners",
+        "Number of active NFS v4.0 Open Owners")
+        .expect("can not create gauge");
+    let opens = register_int_gauge!("nfs_nfsd_opens",
+        "Number of NFS v4.0+ open files?")
+        .expect("can not create gauge");
+    // Don't publish server_misc.retfailed.  As of this writing, it is always 0.
 
     loop {
         // Will block until exporter receives http request.
@@ -120,6 +139,12 @@ fn main() {
             startcnt.set(nfs_stat.startcnt.try_into().unwrap());
             donecnt.set(nfs_stat.donecnt.try_into().unwrap());
             busytime.set(nfs_stat.busytime.try_into().unwrap());
+            clients.set(nfs_stat.server_misc.clients.try_into().unwrap());
+            delegs.set(nfs_stat.server_misc.delegs.try_into().unwrap());
+            lock_owner.set(nfs_stat.server_misc.lock_owner.try_into().unwrap());
+            locks.set(nfs_stat.server_misc.locks.try_into().unwrap());
+            open_owner.set(nfs_stat.server_misc.open_owner.try_into().unwrap());
+            opens.set(nfs_stat.server_misc.opens.try_into().unwrap());
             set_rpcs!(Access, access);
             set_rpcs!(BackChannelCtl, backchannelctrl);
             set_rpcs!(BindConnToSess, bindconntosess);

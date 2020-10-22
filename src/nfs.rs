@@ -95,6 +95,20 @@ pub struct PerRPC {
     pub write: u64,
 }
 
+/// Miscellaneous NFS server stats
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct ServerMisc {
+    /// Number of currently connectec NFS v4.0+ clients?
+    pub clients: u64,
+    pub delegs: u64,
+    pub faults: u64,
+    pub lock_owner: u64,
+    pub locks: u64,
+    pub open_owner: u64,
+    pub opens: u64,
+    pub retfailed: u64,
+}
+
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct NfsStat {
     /// Total time in ns that nfsd was busy with at least one operation.
@@ -107,6 +121,7 @@ pub struct NfsStat {
     /// Cumulative duration spent processing each operation, in nanoseconds.
     /// May wrap!
     pub duration: PerRWC,
+    pub server_misc: ServerMisc,
     /// Count of each RPC processed by the server
     pub server_rpcs: PerRPC,
     /// Total number of operations that have been started since boot
@@ -132,6 +147,16 @@ pub fn collect() -> Result<NfsStat> {
         read: bintime_to_ns(&raw.srvduration[ffi::NFSV4OP_READ as usize]),
         write: bintime_to_ns(&raw.srvduration[ffi::NFSV4OP_WRITE as usize]),
         commit: bintime_to_ns(&raw.srvduration[ffi::NFSV4OP_COMMIT as usize]),
+    };
+    let server_misc = ServerMisc {
+        clients: raw.srvclients,
+        delegs: raw.srvdelegates,
+        faults: raw.srvrpc_errs,
+        lock_owner: raw.srvlockowners,
+        locks: raw.srvlocks,
+        open_owner: raw.srvopenowners,
+        opens: raw.srvopens,
+        retfailed: raw.srv_errs,
     };
     let server_rpcs = PerRPC {
         access: raw.srvrpccnt[ffi::NFSV4OP_ACCESS as usize],
@@ -206,6 +231,7 @@ pub fn collect() -> Result<NfsStat> {
         startcnt: raw.srvstartcnt,
         donecnt: raw.srvdonecnt,
         busytime: bintime_to_ns(&raw.busytime),
+        server_misc,
         server_rpcs
     })
 }
