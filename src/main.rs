@@ -90,6 +90,25 @@ fn main() {
     let busytime = register_int_gauge!("nfs_nfsd_busytime",
         "Total time in ns that nfsd was busy with at least one opeartion")
         .expect("can not create gauge");
+
+    let cache_inprog = register_int_gauge!("nfs_nfsd_cache_in_progress_hits",
+        "Server cache in-progress hits")
+        .expect("can not create gauge");
+    // Don't publish Idem.  It's always 0
+    let cache_nonidempotent = register_int_gauge!(
+        "nfs_nfsd_cache_nonidempotent_hits",
+        "Server cache non-idempotent hits")
+        .expect("can not create gauge");
+    let cache_misses = register_int_gauge!("nfs_nfsd_server_cache_misses",
+        "Server cache misses")
+        .expect("can not create gauge");
+    let cache_size = register_int_gauge!("nfs_nfsd_server_cache_size",
+        "Server cache size in entries")
+        .expect("can not create gauge");
+    let cache_tcppeak = register_int_gauge!("nfs_nfsd_server_cache_tcp_peak",
+        "Peak size of the NFS server's TCP client cache")
+        .expect("can not create gauge");
+
     let clients = register_int_gauge!("nfs_nfsd_clients",
         "Number of connected NFS v4.0+ clients")
         .expect("can not create gauge");
@@ -139,12 +158,22 @@ fn main() {
             startcnt.set(nfs_stat.startcnt.try_into().unwrap());
             donecnt.set(nfs_stat.donecnt.try_into().unwrap());
             busytime.set(nfs_stat.busytime.try_into().unwrap());
+
+            cache_inprog.set(nfs_stat.server_cache.inprog.try_into().unwrap());
+            cache_nonidempotent.set(
+                nfs_stat.server_cache.nonidem.try_into().unwrap());
+            cache_misses.set(nfs_stat.server_cache.misses.try_into().unwrap());
+            cache_size.set(nfs_stat.server_cache.size.try_into().unwrap());
+            cache_tcppeak.set(
+                nfs_stat.server_cache.tcp_peak.try_into().unwrap());
+
             clients.set(nfs_stat.server_misc.clients.try_into().unwrap());
             delegs.set(nfs_stat.server_misc.delegs.try_into().unwrap());
             lock_owner.set(nfs_stat.server_misc.lock_owner.try_into().unwrap());
             locks.set(nfs_stat.server_misc.locks.try_into().unwrap());
             open_owner.set(nfs_stat.server_misc.open_owner.try_into().unwrap());
             opens.set(nfs_stat.server_misc.opens.try_into().unwrap());
+
             set_rpcs!(Access, access);
             set_rpcs!(BackChannelCtl, backchannelctrl);
             set_rpcs!(BindConnToSess, bindconntosess);

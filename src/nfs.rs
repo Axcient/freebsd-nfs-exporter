@@ -95,6 +95,17 @@ pub struct PerRPC {
     pub write: u64,
 }
 
+/// Server cache statistics
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct ServerCache {
+    pub inprog: u64,
+    pub idem: u64,
+    pub nonidem: u64,
+    pub misses: u64,
+    pub size: u64,
+    pub tcp_peak: u64
+}
+
 /// Miscellaneous NFS server stats
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct ServerMisc {
@@ -121,6 +132,7 @@ pub struct NfsStat {
     /// Cumulative duration spent processing each operation, in nanoseconds.
     /// May wrap!
     pub duration: PerRWC,
+    pub server_cache: ServerCache,
     pub server_misc: ServerMisc,
     /// Count of each RPC processed by the server
     pub server_rpcs: PerRPC,
@@ -147,6 +159,14 @@ pub fn collect() -> Result<NfsStat> {
         read: bintime_to_ns(&raw.srvduration[ffi::NFSV4OP_READ as usize]),
         write: bintime_to_ns(&raw.srvduration[ffi::NFSV4OP_WRITE as usize]),
         commit: bintime_to_ns(&raw.srvduration[ffi::NFSV4OP_COMMIT as usize]),
+    };
+    let server_cache = ServerCache {
+        inprog: raw.srvcache_inproghits,
+        idem: raw.srvcache_idemdonehits,
+        nonidem: raw.srvcache_nonidemdonehits,
+        misses: raw.srvcache_misses,
+        size: i64::max(0, i64::from(raw.srvcache_size)) as u64,
+        tcp_peak: raw.srvcache_tcppeak
     };
     let server_misc = ServerMisc {
         clients: raw.srvclients,
@@ -231,6 +251,7 @@ pub fn collect() -> Result<NfsStat> {
         startcnt: raw.srvstartcnt,
         donecnt: raw.srvdonecnt,
         busytime: bintime_to_ns(&raw.busytime),
+        server_cache,
         server_misc,
         server_rpcs
     })
