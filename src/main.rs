@@ -91,6 +91,44 @@ fn main() {
         "Total time in ns that nfsd was busy with at least one opeartion")
         .expect("can not create gauge");
 
+    let cache_inprog = register_int_gauge!("nfs_nfsd_cache_in_progress_hits",
+        "Server cache in-progress hits")
+        .expect("can not create gauge");
+    // Don't publish Idem.  It's always 0
+    let cache_nonidempotent = register_int_gauge!(
+        "nfs_nfsd_cache_nonidempotent_hits",
+        "Server cache non-idempotent hits")
+        .expect("can not create gauge");
+    let cache_misses = register_int_gauge!("nfs_nfsd_server_cache_misses",
+        "Server cache misses")
+        .expect("can not create gauge");
+    let cache_size = register_int_gauge!("nfs_nfsd_server_cache_size",
+        "Server cache size in entries")
+        .expect("can not create gauge");
+    let cache_tcppeak = register_int_gauge!("nfs_nfsd_server_cache_tcp_peak",
+        "Peak size of the NFS server's TCP client cache")
+        .expect("can not create gauge");
+
+    let clients = register_int_gauge!("nfs_nfsd_clients",
+        "Number of connected NFS v4.x clients")
+        .expect("can not create gauge");
+    let delegs = register_int_gauge!("nfs_nfsd_delegations",
+        "Number of active NFS delegations")
+        .expect("can not create gauge");
+    // Don't publish server_misc.faults.  As of this writing, it is always 0.
+    let lock_owner = register_int_gauge!("nfs_nfsd_lock_owners",
+        "Number of active NFS lock owners")
+        .expect("can not create gauge");
+    let locks = register_int_gauge!("nfs_nfsd_locks",
+        "Number of active NFS locks")
+        .expect("can not create gauge");
+    let open_owner = register_int_gauge!("nfs_nfsd_open_owners",
+        "Number of active NFS v4.0 Open Owners")
+        .expect("can not create gauge");
+    let opens = register_int_gauge!("nfs_nfsd_opens",
+        "Number of NFS v4.x open files?")
+        .expect("can not create gauge");
+    // Don't publish server_misc.retfailed.  As of this writing, it is always 0.
 
     loop {
         // Will block until exporter receives http request.
@@ -103,7 +141,7 @@ fn main() {
             macro_rules! set_rpcs {
                 ($label:ident, $field:ident) => {
                     rpcs.with_label_values(&[stringify!($label)])
-                        .set(nfs_stat.$field.try_into().unwrap());
+                        .set(nfs_stat.server_rpcs.$field.try_into().unwrap());
                 };
             }
 
@@ -120,6 +158,22 @@ fn main() {
             startcnt.set(nfs_stat.startcnt.try_into().unwrap());
             donecnt.set(nfs_stat.donecnt.try_into().unwrap());
             busytime.set(nfs_stat.busytime.try_into().unwrap());
+
+            cache_inprog.set(nfs_stat.server_cache.inprog.try_into().unwrap());
+            cache_nonidempotent.set(
+                nfs_stat.server_cache.nonidem.try_into().unwrap());
+            cache_misses.set(nfs_stat.server_cache.misses.try_into().unwrap());
+            cache_size.set(nfs_stat.server_cache.size.try_into().unwrap());
+            cache_tcppeak.set(
+                nfs_stat.server_cache.tcp_peak.try_into().unwrap());
+
+            clients.set(nfs_stat.server_misc.clients.try_into().unwrap());
+            delegs.set(nfs_stat.server_misc.delegs.try_into().unwrap());
+            lock_owner.set(nfs_stat.server_misc.lock_owner.try_into().unwrap());
+            locks.set(nfs_stat.server_misc.locks.try_into().unwrap());
+            open_owner.set(nfs_stat.server_misc.open_owner.try_into().unwrap());
+            opens.set(nfs_stat.server_misc.opens.try_into().unwrap());
+
             set_rpcs!(Access, access);
             set_rpcs!(BackChannelCtl, backchannelctrl);
             set_rpcs!(BindConnToSess, bindconntosess);
