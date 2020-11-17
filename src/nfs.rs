@@ -99,7 +99,6 @@ pub struct PerRPC {
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct ServerCache {
     pub inprog: u64,
-    pub idem: u64,
     pub nonidem: u64,
     pub misses: u64,
     pub size: u64,
@@ -109,15 +108,13 @@ pub struct ServerCache {
 /// Miscellaneous NFS server stats
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct ServerMisc {
-    /// Number of currently connectec NFS v4.0+ clients?
+    /// Number of currently connected NFS v4.0+ clients?
     pub clients: u64,
     pub delegs: u64,
-    pub faults: u64,
     pub lock_owner: u64,
     pub locks: u64,
     pub open_owner: u64,
     pub opens: u64,
-    pub retfailed: u64,
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
@@ -162,7 +159,6 @@ pub fn collect() -> Result<NfsStat> {
     };
     let server_cache = ServerCache {
         inprog: raw.srvcache_inproghits,
-        idem: raw.srvcache_idemdonehits,
         nonidem: raw.srvcache_nonidemdonehits,
         misses: raw.srvcache_misses,
         size: i64::max(0, i64::from(raw.srvcache_size)) as u64,
@@ -171,12 +167,10 @@ pub fn collect() -> Result<NfsStat> {
     let server_misc = ServerMisc {
         clients: raw.srvclients,
         delegs: raw.srvdelegates,
-        faults: raw.srvrpc_errs,
         lock_owner: raw.srvlockowners,
         locks: raw.srvlocks,
         open_owner: raw.srvopenowners,
         opens: raw.srvopens,
-        retfailed: raw.srv_errs,
     };
     let server_rpcs = PerRPC {
         access: raw.srvrpccnt[ffi::NFSV4OP_ACCESS as usize],

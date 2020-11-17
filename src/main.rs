@@ -115,7 +115,6 @@ fn main() {
     let delegs = register_int_gauge!("nfs_nfsd_delegations",
         "Number of active NFS delegations")
         .expect("can not create gauge");
-    // Don't publish server_misc.faults.  As of this writing, it is always 0.
     let lock_owner = register_int_gauge!("nfs_nfsd_lock_owners",
         "Number of active NFS lock owners")
         .expect("can not create gauge");
@@ -128,7 +127,6 @@ fn main() {
     let opens = register_int_gauge!("nfs_nfsd_opens",
         "Number of NFS v4.x open files?")
         .expect("can not create gauge");
-    // Don't publish server_misc.retfailed.  As of this writing, it is always 0.
 
     loop {
         // Will block until exporter receives http request.
