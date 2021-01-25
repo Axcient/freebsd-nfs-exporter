@@ -1,7 +1,6 @@
 # FreeBSD NFS statistics exporter for Prometheus
 
 [![Build Status](https://api.cirrus-ci.com/github/Axcient/freebsd-nfs-exporter.svg)](https://cirrus-ci.com/github/Axcient/freebsd-nfs-exporter)
-[![docs.rs](https://docs.rs/freebsd-nfs-exporter/badge.svg)](https://docs.rs/freebsd-nfs-exporter)
 [![crates.io](https://img.shields.io/crates/v/freebsd-nfs-exporter.svg)](https://crates.io/crates/freebsd-nfs-exporter)
 
 ## Overview
