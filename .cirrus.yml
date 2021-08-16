@@ -1,20 +1,30 @@
-freebsd_instance:
-  image: freebsd-12-1-release-amd64
-
 task:
   matrix:
-    - name: cargo test (nightly)
+    - name: FreeBSD 13.0 nightly
       env:
         VERSION: nightly
-    - name: cargo test (1.44.0)
+      freebsd_instance:
+        image: freebsd-13-0-release-amd64
+    - name: FreeBSD 13.0 stable
       env:
-        VERSION: 1.44.0
+        VERSION: 1.49.0
+      freebsd_instance:
+        image: freebsd-13-0-release-amd64
+    - name: FreeBSD 12.2 stable
+      env:
+        VERSION: 1.49.0
+      freebsd_instance:
+        image: freebsd-12-2-release-amd64
   setup_script:
     - fetch https://sh.rustup.rs -o rustup.sh
     - sh rustup.sh -y --profile=minimal --default-toolchain ${VERSION}-x86_64-unknown-freebsd
+    - pkg install -y llvm
   cargo_cache:
     folder: $HOME/.cargo/registry
     fingerprint_script: cat Cargo.lock || echo ""
   build_script:
     - . $HOME/.cargo/env
-    - cargo +$VERSION build $CARGO_ARGS --all
+    - cargo +$VERSION build
+  test_script:
+    - . $HOME/.cargo/env
+    - cargo +$VERSION test

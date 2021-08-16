@@ -9,7 +9,6 @@ repository = "https://github.com/Axcient/freebsd-nfs-exporter.git"
 keywords = ["prometheus", "monitoring", "nfs", "freebsd"]
 exclude = [
     "/.gitignore",
-    "bindgen.*"
 ]
 
 [[bin]]
@@ -20,3 +19,6 @@ path = "src/main.rs"
 clap = "2.0"
 env_logger = "0.7"
 prometheus_exporter = "0.6"
+
+[build-dependencies]
+bindgen = { version = "0.59.1", features=[] }
