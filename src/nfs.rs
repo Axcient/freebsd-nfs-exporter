@@ -5,7 +5,9 @@ use std::{
 
 #[allow(non_camel_case_types)]
 #[allow(dead_code)]
-mod ffi;
+mod ffi {
+    include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+}
 
 fn bintime_to_ns(bintime: &ffi::bintime) -> u64 {
     (bintime.sec as u64).wrapping_mul(1_000_000_000)
