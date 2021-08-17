@@ -2,6 +2,7 @@
 
 [![Build Status](https://api.cirrus-ci.com/github/Axcient/freebsd-nfs-exporter.svg)](https://cirrus-ci.com/github/Axcient/freebsd-nfs-exporter)
 [![crates.io](https://img.shields.io/crates/v/freebsd-nfs-exporter.svg)](https://crates.io/crates/freebsd-nfs-exporter)
+[![FreeBSD port](https://repology.org/badge/version-for-repo/freebsd/nfs-exporter.svg)](https://repology.org/project/nfs-exporter/versions)
 
 ## Overview
 
