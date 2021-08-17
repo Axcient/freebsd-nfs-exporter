@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased] - ReleaseDate
+## [0.3.1] - 2021-08-17
 ### Fixed
 
 - Fixed the `nfs_nfsd_total_bytes` and `nfs_nfsd_total_duration` gauges on
