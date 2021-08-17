@@ -6,8 +6,6 @@ use env_logger::{
     Env,
 };
 use prometheus_exporter::{
-    FinishedUpdate,
-    PrometheusExporter,
     prometheus::{
         register_int_gauge,
         register_int_gauge_vec,
@@ -64,7 +62,7 @@ fn main() {
     let sa = SocketAddr::new(ia, port.parse().unwrap());
 
     // Start exporter.
-    let (request_receiver, finished_sender) = PrometheusExporter::run_and_notify(sa);
+    let exporter = prometheus_exporter::start(sa).unwrap();
 
     // Create metrics
     // Even though these are gauge, we use the Gauge API since the kernel
@@ -130,7 +128,7 @@ fn main() {
 
     loop {
         // Will block until exporter receives http request.
-        request_receiver.recv().unwrap();
+        let _guard = exporter.wait_request();
 
         // Update metric with random value.
         let nfs_stat = nfs::collect().unwrap();
@@ -236,9 +234,5 @@ fn main() {
             set_rpcs!(WantDeleg, wantdeleg);
             set_rpcs!(Write, write);
         }
-
-        // Notify exporter that all metrics have been updated so the caller client can
-        // receive a response.
-        finished_sender.send(FinishedUpdate).unwrap();
     }
 }
