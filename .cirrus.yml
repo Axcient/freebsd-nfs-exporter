@@ -1,20 +1,6 @@
-task:
-  matrix:
-    - name: FreeBSD 13.0 nightly
-      env:
-        VERSION: nightly
-      freebsd_instance:
-        image: freebsd-13-0-release-amd64
-    - name: FreeBSD 13.0 stable
-      env:
-        VERSION: 1.49.0
-      freebsd_instance:
-        image: freebsd-13-0-release-amd64
-    - name: FreeBSD 12.2 stable
-      env:
-        VERSION: 1.49.0
-      freebsd_instance:
-        image: freebsd-12-2-release-amd64
+common: &COMMON
+  env:
+    HOME: /tmp # cargo needs it
   setup_script:
     - fetch https://sh.rustup.rs -o rustup.sh
     - sh rustup.sh -y --profile=minimal --default-toolchain ${VERSION}-x86_64-unknown-freebsd
@@ -24,7 +10,37 @@ task:
     fingerprint_script: cat Cargo.lock || echo ""
   build_script:
     - . $HOME/.cargo/env
-    - cargo +$VERSION build
+    - cargo build
   test_script:
     - . $HOME/.cargo/env
-    - cargo +$VERSION test
+    - cargo test
+
+task:
+  env:
+    VERSION: 1.49.0
+  matrix:
+    - name: FreeBSD 13.0 MSRV
+      freebsd_instance:
+        image: freebsd-13-0-release-amd64
+    - name: FreeBSD 12.2 MSRV
+      freebsd_instance:
+        image: freebsd-12-2-release-amd64
+  << : *COMMON
+  before_cache_script: rm -rf $HOME/.cargo/registry/index
+
+task:
+  name: FreeBSD 13.0 nightly
+  env:
+    VERSION: nightly
+  freebsd_instance:
+    image: freebsd-13-0-release-amd64
+  << : *COMMON
+  clippy_script:
+    - . $HOME/.cargo/env
+    - rustup component add clippy
+    - cargo clippy --all-targets -- -D warnings
+  audit_script:
+    - . $HOME/.cargo/env
+    - cargo install cargo-audit
+    - cargo audit
+  before_cache_script: rm -rf $HOME/.cargo/registry/index
