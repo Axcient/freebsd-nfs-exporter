@@ -15,7 +15,7 @@ use prometheus_exporter::{
 };
 use std::{
     convert::TryInto,
-    net::SocketAddr
+    net::{IpAddr, SocketAddr}
 };
 
 mod nfs;
@@ -60,11 +60,11 @@ fn main() {
     Builder::from_env(Env::default().default_filter_or("info")).init();
 
     // Parse address used to bind exporter to.
-    let addr_raw = format!("{}:{}", addr, port);
-    let addr: SocketAddr = addr_raw.parse().expect("can not parse listen addr");
+    let ia: IpAddr = addr.parse().unwrap();
+    let sa = SocketAddr::new(ia, port.parse().unwrap());
 
     // Start exporter.
-    let (request_receiver, finished_sender) = PrometheusExporter::run_and_notify(addr);
+    let (request_receiver, finished_sender) = PrometheusExporter::run_and_notify(sa);
 
     // Create metrics
     // Even though these are gauge, we use the Gauge API since the kernel
