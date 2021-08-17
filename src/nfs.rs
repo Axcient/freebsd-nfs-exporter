@@ -5,6 +5,8 @@ use std::{
 
 #[allow(non_camel_case_types)]
 #[allow(dead_code)]
+// https://github.com/rust-lang/rust-bindgen/issues/1651
+#[allow(deref_nullptr)]
 mod ffi {
     include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 }
@@ -140,8 +142,10 @@ pub struct NfsStat {
 }
 
 pub fn collect() -> Result<NfsStat> {
-    let mut raw = ffi::nfsstatsv1::default();
-    raw.vers = ffi::NFSSTATS_V1 as i32;
+    let mut raw = ffi::nfsstatsv1 {
+        vers: ffi::NFSSTATS_V1 as i32,
+        .. Default::default()
+    };
     let flag = ffi::NFSSVC_GETSTATS | ffi::NFSSVC_NEWSTRUCT;
 	let raw = unsafe {
         let r = ffi::nfssvc(flag as i32, &mut raw as *mut  _ as *mut c_void);
