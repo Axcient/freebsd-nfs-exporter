@@ -17,6 +17,10 @@ cargo install freebsd-nfs-exporter
 daemon nfs-exporter
 ```
 
+Note that the FreeBSD port of this exporter
+([net-mgmt/nfs-exporter](https://www.freshports.org/net-mgmt/nfs-exporter))
+comes with an rc(8) service script.
+
 # License
 
 `freebsd-nfs-exporter` is primarily distributed under the terms of both the MIT
