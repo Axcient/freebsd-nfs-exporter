@@ -17,6 +17,14 @@ cargo install freebsd-nfs-exporter
 daemon nfs-exporter
 ```
 
+# Minimum Supported Rust Version (MSRV)
+
+freebsd-nfs-exporter does not guarantee any specific MSRV.  Rather, it
+guarantees compatibility with the oldest rustc shipped in the FreeBSD ports
+collection.
+
+* https://www.freshports.org/lang/rust/
+
 # License
 
 `freebsd-nfs-exporter` is primarily distributed under the terms of both the MIT
