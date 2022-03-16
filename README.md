@@ -21,6 +21,14 @@ Note that the FreeBSD port of this exporter
 ([net-mgmt/nfs-exporter](https://www.freshports.org/net-mgmt/nfs-exporter))
 comes with an rc(8) service script.
 
+# Minimum Supported Rust Version (MSRV)
+
+freebsd-nfs-exporter does not guarantee any specific MSRV.  Rather, it
+guarantees compatibility with the oldest rustc shipped in the FreeBSD ports
+collection.
+
+* https://www.freshports.org/lang/rust/
+
 # License
 
 `freebsd-nfs-exporter` is primarily distributed under the terms of both the MIT

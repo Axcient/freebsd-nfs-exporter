@@ -18,7 +18,7 @@ path = "src/main.rs"
 [dependencies]
 clap = "2.0"
 env_logger = "0.7"
-prometheus_exporter = "0.8.0"
+prometheus_exporter = "0.8.4"
 
 [build-dependencies]
-bindgen = { version = "0.59.1", features=[] }
+bindgen = { version = "0.59.2", features=[] }

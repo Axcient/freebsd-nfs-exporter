@@ -70,61 +70,61 @@ fn main() {
     let bytes = register_int_gauge_vec!("nfs_nfsd_total_bytes",
                                         "Total nfsd bytes per operation",
                                         &["method"])
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
     let duration = register_int_gauge_vec!("nfs_nfsd_total_duration",
         "Total nfsd nanoseconds spend processing each operation.  May wrap.",
         &["method"])
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
     let rpcs = register_int_gauge_vec!("nfs_nfsd_requests_total",
                                        "Count of server RPCs",
                                        &["method"])
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
     let startcnt = register_int_gauge!("nfs_nfsd_start_count",
         "Total number of opreations started since boot")
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
     let donecnt = register_int_gauge!("nfs_nfsd_done_count",
         "Total number of opreations completed since boot")
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
     let busytime = register_int_gauge!("nfs_nfsd_busytime",
         "Total time in ns that nfsd was busy with at least one opeartion")
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
 
     let cache_inprog = register_int_gauge!("nfs_nfsd_cache_in_progress_hits",
         "Server cache in-progress hits")
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
     // Don't publish Idem.  It's always 0
     let cache_nonidempotent = register_int_gauge!(
         "nfs_nfsd_cache_nonidempotent_hits",
         "Server cache non-idempotent hits")
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
     let cache_misses = register_int_gauge!("nfs_nfsd_server_cache_misses",
         "Server cache misses")
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
     let cache_size = register_int_gauge!("nfs_nfsd_server_cache_size",
         "Server cache size in entries")
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
     let cache_tcppeak = register_int_gauge!("nfs_nfsd_server_cache_tcp_peak",
         "Peak size of the NFS server's TCP client cache")
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
 
     let clients = register_int_gauge!("nfs_nfsd_clients",
         "Number of connected NFS v4.x clients")
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
     let delegs = register_int_gauge!("nfs_nfsd_delegations",
         "Number of active NFS delegations")
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
     let lock_owner = register_int_gauge!("nfs_nfsd_lock_owners",
         "Number of active NFS lock owners")
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
     let locks = register_int_gauge!("nfs_nfsd_locks",
         "Number of active NFS locks")
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
     let open_owner = register_int_gauge!("nfs_nfsd_open_owners",
         "Number of active NFS v4.0 Open Owners")
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
     let opens = register_int_gauge!("nfs_nfsd_opens",
         "Number of NFS v4.x open files?")
-        .expect("can not create gauge");
+        .expect("cannot create gauge");
 
     loop {
         // Will block until exporter receives http request.
