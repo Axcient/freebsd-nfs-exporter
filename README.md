@@ -17,6 +17,10 @@ cargo install freebsd-nfs-exporter
 daemon nfs-exporter
 ```
 
+Note that the FreeBSD port of this exporter
+([net-mgmt/nfs-exporter](https://www.freshports.org/net-mgmt/nfs-exporter))
+comes with an rc(8) service script.
+
 # Minimum Supported Rust Version (MSRV)
 
 freebsd-nfs-exporter does not guarantee any specific MSRV.  Rather, it
