@@ -23,18 +23,18 @@ fn main() {
         .version("0.1")
         .about("Export NFS statistics to Prometheus")
         .arg(Arg::with_name("bind")
-             .short("b")
+             .short('b')
              .value_name("ADDR")
              .help("Bind to this local address")
              .takes_value(true))
         .arg(Arg::with_name("client")
-             .short("c")
+             .short('c')
              .help("Publish NFS client statistics"))
         .arg(Arg::with_name("server")
-             .short("s")
+             .short('s')
              .help("Publish NFS server statistics"))
         .arg(Arg::with_name("port")
-             .short("p")
+             .short('p')
              .value_name("PORT")
              .help("TCP port (default 9898)")
              .takes_value(true))
@@ -48,7 +48,7 @@ fn main() {
         (false, true)
     } else {
         clap::Error::with_description(
-            "client stats are TODO",
+            "client stats are TODO".to_string(),
             clap::ErrorKind::InvalidValue)
             .exit();
     };
