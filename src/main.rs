@@ -7,14 +7,11 @@ use env_logger::{
 };
 use prometheus_exporter::{
     prometheus::{
-        register_int_gauge,
-        register_int_gauge_vec,
+        register_gauge,
+        register_gauge_vec,
     }
 };
-use std::{
-    convert::TryInto,
-    net::{IpAddr, SocketAddr}
-};
+use std::net::{IpAddr, SocketAddr};
 
 mod nfs;
 
@@ -65,64 +62,69 @@ fn main() {
     let exporter = prometheus_exporter::start(sa).unwrap();
 
     // Create metrics
-    // Even though these are gauge, we use the Gauge API since the kernel
-    // reports their current values.
-    let bytes = register_int_gauge_vec!("nfs_nfsd_total_bytes",
+    // Even though these are really counters, we use the Gauge API since the
+    // kernel reports their current values and prometheus::Counter only has an
+    // inc method, not a set method.
+    // And even though they're integers, we must use the f64 gauge type because
+    // prometheus::IntCounter wraps i64 instead of u64.  The loss of precision
+    // is unavoidable because Prometheus itself treats all metrics as f64
+    // anyway.
+    let bytes = register_gauge_vec!("nfs_nfsd_total_bytes",
                                         "Total nfsd bytes per operation",
                                         &["method"])
         .expect("cannot create gauge");
-    let duration = register_int_gauge_vec!("nfs_nfsd_total_duration",
+    let duration = register_gauge_vec!("nfs_nfsd_total_duration",
         "Total nfsd nanoseconds spend processing each operation.  May wrap.",
         &["method"])
         .expect("cannot create gauge");
-    let rpcs = register_int_gauge_vec!("nfs_nfsd_requests_total",
+    let rpcs = register_gauge_vec!("nfs_nfsd_requests_total",
                                        "Count of server RPCs",
                                        &["method"])
         .expect("cannot create gauge");
-    let startcnt = register_int_gauge!("nfs_nfsd_start_count",
+    let startcnt = register_gauge!("nfs_nfsd_start_count",
         "Total number of opreations started since boot")
         .expect("cannot create gauge");
-    let donecnt = register_int_gauge!("nfs_nfsd_done_count",
+    let donecnt = register_gauge!("nfs_nfsd_done_count",
         "Total number of opreations completed since boot")
         .expect("cannot create gauge");
-    let busytime = register_int_gauge!("nfs_nfsd_busytime",
+    let busytime = register_gauge!("nfs_nfsd_busytime",
         "Total time in ns that nfsd was busy with at least one opeartion")
         .expect("cannot create gauge");
 
-    let cache_inprog = register_int_gauge!("nfs_nfsd_cache_in_progress_hits",
+    let cache_inprog = register_gauge!("nfs_nfsd_cache_in_progress_hits",
         "Server cache in-progress hits")
         .expect("cannot create gauge");
     // Don't publish Idem.  It's always 0
-    let cache_nonidempotent = register_int_gauge!(
+    let cache_nonidempotent = register_gauge!(
         "nfs_nfsd_cache_nonidempotent_hits",
         "Server cache non-idempotent hits")
         .expect("cannot create gauge");
-    let cache_misses = register_int_gauge!("nfs_nfsd_server_cache_misses",
+    let cache_misses = register_gauge!("nfs_nfsd_server_cache_misses",
         "Server cache misses")
         .expect("cannot create gauge");
-    let cache_size = register_int_gauge!("nfs_nfsd_server_cache_size",
+    let cache_size = register_gauge!("nfs_nfsd_server_cache_size",
         "Server cache size in entries")
         .expect("cannot create gauge");
-    let cache_tcppeak = register_int_gauge!("nfs_nfsd_server_cache_tcp_peak",
+    let cache_tcppeak = register_gauge!("nfs_nfsd_server_cache_tcp_peak",
         "Peak size of the NFS server's TCP client cache")
         .expect("cannot create gauge");
 
-    let clients = register_int_gauge!("nfs_nfsd_clients",
+    let clients = register_gauge!("nfs_nfsd_clients",
         "Number of connected NFS v4.x clients")
         .expect("cannot create gauge");
-    let delegs = register_int_gauge!("nfs_nfsd_delegations",
+    let delegs = register_gauge!("nfs_nfsd_delegations",
         "Number of active NFS delegations")
         .expect("cannot create gauge");
-    let lock_owner = register_int_gauge!("nfs_nfsd_lock_owners",
+    let lock_owner = register_gauge!("nfs_nfsd_lock_owners",
         "Number of active NFS lock owners")
         .expect("cannot create gauge");
-    let locks = register_int_gauge!("nfs_nfsd_locks",
+    let locks = register_gauge!("nfs_nfsd_locks",
         "Number of active NFS locks")
         .expect("cannot create gauge");
-    let open_owner = register_int_gauge!("nfs_nfsd_open_owners",
+    let open_owner = register_gauge!("nfs_nfsd_open_owners",
         "Number of active NFS v4.0 Open Owners")
         .expect("cannot create gauge");
-    let opens = register_int_gauge!("nfs_nfsd_opens",
+    let opens = register_gauge!("nfs_nfsd_opens",
         "Number of NFS v4.x open files?")
         .expect("cannot create gauge");
 
@@ -137,38 +139,38 @@ fn main() {
             macro_rules! set_rpcs {
                 ($label:ident, $field:ident) => {
                     rpcs.with_label_values(&[stringify!($label)])
-                        .set(nfs_stat.server_rpcs.$field.try_into().unwrap());
+                        .set(nfs_stat.server_rpcs.$field as f64);
                 };
             }
 
             bytes.with_label_values(&["Read"])
-                .set(nfs_stat.bytes.read.try_into().unwrap());
+                .set(nfs_stat.bytes.read as f64);
             bytes.with_label_values(&["Write"])
-                .set(nfs_stat.bytes.write.try_into().unwrap());
+                .set(nfs_stat.bytes.write as f64);
             duration.with_label_values(&["Read"])
-                .set(nfs_stat.duration.read.try_into().unwrap());
+                .set(nfs_stat.duration.read as f64);
             duration.with_label_values(&["Write"])
-                .set(nfs_stat.duration.write.try_into().unwrap());
+                .set(nfs_stat.duration.write as f64);
             duration.with_label_values(&["Commit"])
-                .set(nfs_stat.duration.commit.try_into().unwrap());
-            startcnt.set(nfs_stat.startcnt.try_into().unwrap());
-            donecnt.set(nfs_stat.donecnt.try_into().unwrap());
-            busytime.set(nfs_stat.busytime.try_into().unwrap());
+                .set(nfs_stat.duration.commit as f64);
+            startcnt.set(nfs_stat.startcnt as f64);
+            donecnt.set(nfs_stat.donecnt as f64);
+            busytime.set(nfs_stat.busytime as f64);
 
-            cache_inprog.set(nfs_stat.server_cache.inprog.try_into().unwrap());
+            cache_inprog.set(nfs_stat.server_cache.inprog as f64);
             cache_nonidempotent.set(
-                nfs_stat.server_cache.nonidem.try_into().unwrap());
-            cache_misses.set(nfs_stat.server_cache.misses.try_into().unwrap());
-            cache_size.set(nfs_stat.server_cache.size.try_into().unwrap());
+                nfs_stat.server_cache.nonidem as f64);
+            cache_misses.set(nfs_stat.server_cache.misses as f64);
+            cache_size.set(nfs_stat.server_cache.size as f64);
             cache_tcppeak.set(
-                nfs_stat.server_cache.tcp_peak.try_into().unwrap());
+                nfs_stat.server_cache.tcp_peak as f64);
 
-            clients.set(nfs_stat.server_misc.clients.try_into().unwrap());
-            delegs.set(nfs_stat.server_misc.delegs.try_into().unwrap());
-            lock_owner.set(nfs_stat.server_misc.lock_owner.try_into().unwrap());
-            locks.set(nfs_stat.server_misc.locks.try_into().unwrap());
-            open_owner.set(nfs_stat.server_misc.open_owner.try_into().unwrap());
-            opens.set(nfs_stat.server_misc.opens.try_into().unwrap());
+            clients.set(nfs_stat.server_misc.clients as f64);
+            delegs.set(nfs_stat.server_misc.delegs as f64);
+            lock_owner.set(nfs_stat.server_misc.lock_owner as f64);
+            locks.set(nfs_stat.server_misc.locks as f64);
+            open_owner.set(nfs_stat.server_misc.open_owner as f64);
+            opens.set(nfs_stat.server_misc.opens as f64);
 
             set_rpcs!(Access, access);
             set_rpcs!(BackChannelCtl, backchannelctrl);
