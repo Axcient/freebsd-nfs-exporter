@@ -17,7 +17,7 @@ path = "src/main.rs"
 
 [dependencies]
 clap = "3.0"
-env_logger = "0.7"
+env_logger = "0.9"
 prometheus_exporter = "0.8.4"
 
 [build-dependencies]
