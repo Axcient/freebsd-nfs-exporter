@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased] - ReleaseDate
+
+### Fixed
+
+- Fixed a crash if any counter exceeded `i64::MAX_VALUE`.
+  (#[17](https://github.com/Axcient/freebsd-nfs-exporter/pull/17))
+
 ## [0.3.1] - 2021-08-17
 ### Fixed
 
