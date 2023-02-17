@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased] - ReleaseDate
+
+### Added
+
+- The nfs-exporter now runs in Capsicum mode for enhanced security.
+  (#[20](https://github.com/Axcient/freebsd-nfs-exporter/pull/20))
+
 ## [0.3.2] - 2022-12-08
 
 ### Fixed
