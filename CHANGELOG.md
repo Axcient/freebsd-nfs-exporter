@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased] - ReleaseDate
+
+### Fixed
+
+- Correctly start Casper from a single-threaded context.
+  (#[22](https://github.com/Axcient/freebsd-nfs-exporter/pull/22))
+
 ## [0.4.0] - 2023-02-17
 
 ### Added
