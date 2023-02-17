@@ -1,5 +1,6 @@
 // vim: tw=80
 
+use capsicum::casper::Casper;
 use clap::{self, App, Arg};
 use env_logger::{
     Builder,
@@ -13,7 +14,10 @@ use prometheus_exporter::{
 };
 use std::net::{IpAddr, SocketAddr};
 
+mod cap_nfs;
 mod nfs;
+
+use cap_nfs::CasperExt;
 
 fn main() {
     let matches = App::new("nfs-exporter")
@@ -60,6 +64,11 @@ fn main() {
 
     // Start exporter.
     let exporter = prometheus_exporter::start(sa).unwrap();
+
+    // Enter capability mode.
+    let casper = unsafe {Casper::new().unwrap()};
+    let mut cap_nfs = casper.nfsstat().unwrap();
+    capsicum::enter().unwrap();
 
     // Create metrics
     // Even though these are really counters, we use the Gauge API since the
@@ -133,7 +142,7 @@ fn main() {
         let _guard = exporter.wait_request();
 
         // Update metric with random value.
-        let nfs_stat = nfs::collect().unwrap();
+        let nfs_stat = cap_nfs.nfsstat().unwrap();
 
         if s {
             macro_rules! set_rpcs {
