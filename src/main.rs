@@ -62,12 +62,14 @@ fn main() {
     let ia: IpAddr = addr.parse().unwrap();
     let sa = SocketAddr::new(ia, port.parse().unwrap());
 
-    // Start exporter.
+    // Start Casper .  Safe because we're still single-threaded.
+    let casper = unsafe {Casper::new().unwrap()};
+    let mut cap_nfs = casper.nfsstat().unwrap();
+
+    // Start exporter, which creates additional threads.
     let exporter = prometheus_exporter::start(sa).unwrap();
 
     // Enter capability mode.
-    let casper = unsafe {Casper::new().unwrap()};
-    let mut cap_nfs = casper.nfsstat().unwrap();
     capsicum::enter().unwrap();
 
     // Create metrics
