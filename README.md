@@ -24,8 +24,8 @@ comes with an rc(8) service script.
 # Minimum Supported Rust Version (MSRV)
 
 freebsd-nfs-exporter does not guarantee any specific MSRV.  Rather, it
-guarantees compatibility with the oldest rustc shipped in the FreeBSD ports
-collection.
+guarantees compatibility with the oldest rustc shipped in the latest quarterly
+branch of the FreeBSD ports collection.
 
 * https://www.freshports.org/lang/rust/
 
