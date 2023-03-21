@@ -45,29 +45,6 @@ dependencies = [
 
 [[package]]
 name = "bindgen"
-version = "0.60.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "062dddbc1ba4aca46de6338e2bf87771414c335f7b2f2036e8f3e9befebf88e6"
-dependencies = [
- "bitflags",
- "cexpr",
- "clang-sys",
- "clap",
- "env_logger",
- "lazy_static",
- "lazycell",
- "log",
- "peeking_take_while",
- "proc-macro2",
- "quote",
- "regex",
- "rustc-hash",
- "shlex",
- "which",
-]
-
-[[package]]
-name = "bindgen"
 version = "0.64.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c4243e6031260db77ede97ad86c27e501d646a27ab57b59a574f725d98ab1fb4"
@@ -229,7 +206,7 @@ name = "freebsd-nfs-exporter"
 version = "0.4.2"
 dependencies = [
  "bincode",
- "bindgen 0.60.1",
+ "bindgen",
  "capsicum",
  "clap",
  "const-cstr",
@@ -337,7 +314,7 @@ version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a95209ae78318c727f051e39f93e9a102296a2c692f7d5d53a541a4dd632653"
 dependencies = [
- "bindgen 0.64.0",
+ "bindgen",
  "libc",
  "regex",
 ]
