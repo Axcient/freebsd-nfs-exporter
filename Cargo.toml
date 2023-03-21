@@ -26,4 +26,4 @@ serde = "1.0.60"
 serde_derive = "1.0"
 
 [build-dependencies]
-bindgen = { version = "0.60.0", features=[] }
+bindgen = { version = "0.64.0", features=[] }
