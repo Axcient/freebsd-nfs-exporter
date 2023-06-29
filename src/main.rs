@@ -1,7 +1,7 @@
 // vim: tw=80
 
 use capsicum::casper::Casper;
-use clap::{self, App, Arg};
+use clap::{self, CommandFactory, Parser, crate_version};
 use env_logger::{
     Builder,
     Env,
@@ -19,39 +19,36 @@ mod nfs;
 
 use cap_nfs::CasperExt;
 
+#[derive(Parser, Clone, Debug)]
+#[clap(version = crate_version!())]
+/// Export NFS statistics to Prometheus
+struct Cli {
+    /// Bind to this local address
+    #[clap( short = 'b', long, default_value = "0.0.0.0", value_name = "ADDR")]
+    bind: String,
+    /// Publish NFS client statistics
+    #[clap(short = 'c')]
+    client: bool,
+    /// Publish NFS server statistics
+    #[clap(short = 's')]
+    server: bool,
+    /// TCP port
+    #[clap(short = 'p', long, default_value = "9898")]
+    port: u16
+}
+
 fn main() {
-    let matches = App::new("nfs-exporter")
-        .version("0.1")
-        .about("Export NFS statistics to Prometheus")
-        .arg(Arg::with_name("bind")
-             .short('b')
-             .value_name("ADDR")
-             .help("Bind to this local address")
-             .takes_value(true))
-        .arg(Arg::with_name("client")
-             .short('c')
-             .help("Publish NFS client statistics"))
-        .arg(Arg::with_name("server")
-             .short('s')
-             .help("Publish NFS server statistics"))
-        .arg(Arg::with_name("port")
-             .short('p')
-             .value_name("PORT")
-             .help("TCP port (default 9898)")
-             .takes_value(true))
-        .get_matches();
-    let addr = matches.value_of("bind").unwrap_or("0.0.0.0");
-    let port = matches.value_of("port").unwrap_or("9898");
-    let (_c, s) = if !matches.is_present("client") && !matches.is_present("server") {
+    let cli = Cli::parse();
+    let (_c, s) = if !cli.client && !cli.server {
         // By default, print everything
         (true, true)
-    } else if matches.is_present("server") {
+    } else if cli.server {
         (false, true)
     } else {
-        clap::Error::with_description(
-            "client stats are TODO".to_string(),
-            clap::ErrorKind::InvalidValue)
-            .exit();
+        Cli::command()
+            .error(clap::error::ErrorKind::InvalidValue,
+                  "client stats are TODO")
+            .exit()
     };
 
     // Setup logger with default level info so we can see the messages from
@@ -59,8 +56,8 @@ fn main() {
     Builder::from_env(Env::default().default_filter_or("info")).init();
 
     // Parse address used to bind exporter to.
-    let ia: IpAddr = addr.parse().unwrap();
-    let sa = SocketAddr::new(ia, port.parse().unwrap());
+    let ia: IpAddr = cli.bind.parse().unwrap();
+    let sa = SocketAddr::new(ia, cli.port);
 
     // Start Casper .  Safe because we're still single-threaded.
     let casper = unsafe {Casper::new().unwrap()};
