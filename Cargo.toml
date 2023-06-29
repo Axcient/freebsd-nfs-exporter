@@ -21,9 +21,12 @@ clap = "3.0"
 env_logger = "0.9"
 prometheus_exporter = "0.8.4"
 capsicum = { version = "0.2.0", features = ["casper"] }
-const-cstr = "0.3.0"
+cstr = "0.2.11"
 serde = "1.0.60"
 serde_derive = "1.0"
 
 [build-dependencies]
 bindgen = { version = "0.64.0", features=[] }
+
+[patch.crates-io]
+capsicum = { git = "https://github.com/asomers/capsicum-rs.git", branch = "cstr" }
