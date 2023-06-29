@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased] - ReleaseDate
+
+### Fixed
+
+- Fixed the build with Rust nightly after 2023-06-28
+  (#[26](https://github.com/Axcient/freebsd-nfs-exporter/pull/26))
+
 ## [0.4.2] - 2023-03-09
 
 ### Fixed
