@@ -1,14 +1,14 @@
 //! A Casper service that provides NFS stats to capsicumized programs.
-use std::io;
+use std::{ffi::CStr, io};
 
 use capsicum::casper::{self, NvError, NvFlag, NvList, ServiceRegisterFlags};
-use const_cstr::{ConstCStr, const_cstr};
+use cstr::cstr;
 
 use crate::nfs;
 
 struct CapNfs {}
 impl casper::Service for CapNfs {
-    const SERVICE_NAME: ConstCStr = const_cstr!("nfs");
+    const SERVICE_NAME: &'static CStr = cstr!("nfs");
 
     fn cmd(
         cmd: &str,
