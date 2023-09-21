@@ -7,6 +7,14 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Fixed a minor security advisory on the const-cstr crate.
+  ([RUSTSEC-2023-0020](https://rustsec.org/advisories/RUSTSEC-2023-0020))
+  (#[29](https://github.com/Axcient/freebsd-nfs-exporter/pull/29))
+
+- Fixed a minor security advisory on the atty crate.
+  ([RUSTSEC-2021-0145](https://rustsec.org/advisories/RUSTSEC-2021-0145))
+  (#[28](https://github.com/Axcient/freebsd-nfs-exporter/pull/28))
+
 - Fixed the build with Rust nightly after 2023-06-28
   (#[26](https://github.com/Axcient/freebsd-nfs-exporter/pull/26))
 

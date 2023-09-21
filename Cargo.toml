@@ -22,12 +22,9 @@ clap = { version = "4.0", default-features = true, features = ["cargo", "derive"
 cstr = "0.2.11"
 env_logger = "0.10"
 prometheus_exporter = "0.8.4"
-capsicum = { version = "0.2.0", features = ["casper"] }
+capsicum = { version = "0.3.0", features = ["casper"] }
 serde = "1.0.60"
 serde_derive = "1.0"
 
 [build-dependencies]
 bindgen = { version = "0.66.0", features=[] }
-
-[patch.crates-io]
-capsicum = { git = "https://github.com/dlrobertson/capsicum-rs", rev = "39598226e45623bcf78c16f0a1cb6014242a1693" }
