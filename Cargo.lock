@@ -311,7 +311,7 @@ dependencies = [
 
 [[package]]
 name = "freebsd-nfs-exporter"
-version = "0.4.2"
+version = "0.4.3"
 dependencies = [
  "bincode",
  "bindgen",
