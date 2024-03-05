@@ -1,7 +1,7 @@
 // vim: tw=80
 
 use capsicum::casper::Casper;
-use clap::{self, CommandFactory, Parser, crate_version};
+use clap::{CommandFactory, Parser, crate_version};
 use env_logger::{
     Builder,
     Env,
