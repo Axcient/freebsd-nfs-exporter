@@ -19,9 +19,9 @@ task:
   env:
     VERSION: 1.69.0
   matrix:
-    - name: FreeBSD 13.2 MSRV
+    - name: FreeBSD 13.3 MSRV
       freebsd_instance:
-        image: freebsd-13-2-release-amd64
+        image: freebsd-13-3-release-amd64
     - name: FreeBSD 14.0 MSRV
       freebsd_instance:
         image: freebsd-14-0-release-amd64-ufs
@@ -29,18 +29,19 @@ task:
   before_cache_script: rm -rf $HOME/.cargo/registry/index
 
 task:
-  name: FreeBSD 13.2 nightly
+  name: FreeBSD 13.3 nightly
   env:
     VERSION: nightly
   freebsd_instance:
-    image: freebsd-13-2-release-amd64
+    image: freebsd-13-3-release-amd64
   << : *COMMON
   clippy_script:
     - . $HOME/.cargo/env
     - rustup component add clippy
     - cargo clippy --all-targets -- -D warnings
   audit_script:
-    - pkg install -y cargo-audit
+    # install ca_root_nss due to https://github.com/rustsec/rustsec/issues/1137
+    - pkg install -y ca_root_nss cargo-audit
     - . $HOME/.cargo/env
     - cargo audit
   before_cache_script: rm -rf $HOME/.cargo/registry/index
