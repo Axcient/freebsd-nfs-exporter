@@ -2,13 +2,12 @@
 use std::{ffi::CStr, io};
 
 use capsicum::casper::{self, NvError, NvFlag, NvList, ServiceRegisterFlags};
-use cstr::cstr;
 
 use crate::nfs;
 
 struct CapNfs {}
 impl casper::Service for CapNfs {
-    const SERVICE_NAME: &'static CStr = cstr!("nfs");
+    const SERVICE_NAME: &'static CStr = c"nfs";
 
     fn cmd(
         cmd: &str,
