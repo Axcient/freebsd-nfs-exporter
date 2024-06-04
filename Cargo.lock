@@ -118,9 +118,9 @@ checksum = "630be753d4e58660abd17930c71b647fe46c27ea6b63cc59e1e3851406972e42"
 
 [[package]]
 name = "capsicum"
-version = "0.3.0"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f75c2a91197eecfdb2e0b868f956e253110153100e19aef6e60bc9fd5d1e5bd"
+checksum = "34493d4fc3860e57a1c09a266f76c5a92685659af0d4bf5ca87afcf0379d6663"
 dependencies = [
  "casper-sys",
  "ctor",
