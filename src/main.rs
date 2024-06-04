@@ -60,7 +60,7 @@ fn main() {
     let sa = SocketAddr::new(ia, cli.port);
 
     // Start Casper .  Safe because we're still single-threaded.
-    let casper = unsafe {Casper::new().unwrap()};
+    let mut casper = unsafe {Casper::new().unwrap()};
     let mut cap_nfs = casper.nfsstat().unwrap();
 
     // Start exporter, which creates additional threads.
