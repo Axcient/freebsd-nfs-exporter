@@ -13,12 +13,13 @@ impl casper::Service for CapNfs {
         cmd: &str,
         _limits: Option<&NvList>,
         _nvin: Option<&mut NvList>,
-        nvout: &mut NvList) -> io::Result<()> {
+        nvout: &mut NvList,
+    ) -> io::Result<()> {
         assert_eq!(cmd, "nfsstat");
 
         let nfsstat = nfs::collect()?;
-        nvout.
-            insert_binary("nfsstat", &bincode::serialize(&nfsstat).unwrap())
+        nvout
+            .insert_binary("nfsstat", &bincode::serialize(&nfsstat).unwrap())
             .unwrap();
         Ok(())
     }
@@ -38,7 +39,9 @@ impl CapNfsAgent {
         match onvl.get_binary("nfsstat") {
             Ok(Some(sl)) => Ok(bincode::deserialize(sl).unwrap()),
             Ok(None) => panic!("zygote did not return the expected value"),
-            Err(NvError::NativeError(e)) => Err(io::Error::from_raw_os_error(e)),
+            Err(NvError::NativeError(e)) => {
+                Err(io::Error::from_raw_os_error(e))
+            }
             Err(NvError::Io(e)) => Err(e),
             _ => unimplemented!(),
         }
