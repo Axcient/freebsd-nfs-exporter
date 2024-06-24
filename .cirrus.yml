@@ -44,6 +44,10 @@ task:
     - pkg install -y ca_root_nss cargo-audit
     - . $HOME/.cargo/env
     - cargo audit
+  fmt_script:
+    - . $HOME/.cargo/env
+    - rustup component add rustfmt
+    - cargo fmt --all -- --check --color=never
   minver_script:
     - . $HOME/.cargo/env
     - cargo update -Zdirect-minimal-versions

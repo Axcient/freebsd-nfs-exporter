@@ -1,18 +1,11 @@
 // vim: tw=80
 
-use capsicum::casper::Casper;
-use clap::{CommandFactory, Parser, crate_version};
-use env_logger::{
-    Builder,
-    Env,
-};
-use prometheus_exporter::{
-    prometheus::{
-        register_gauge,
-        register_gauge_vec,
-    }
-};
 use std::net::{IpAddr, SocketAddr};
+
+use capsicum::casper::Casper;
+use clap::{crate_version, CommandFactory, Parser};
+use env_logger::{Builder, Env};
+use prometheus_exporter::prometheus::{register_gauge, register_gauge_vec};
 
 mod cap_nfs;
 mod nfs;
@@ -24,8 +17,8 @@ use cap_nfs::CasperExt;
 /// Export NFS statistics to Prometheus
 struct Cli {
     /// Bind to this local address
-    #[clap( short = 'b', long, default_value = "0.0.0.0", value_name = "ADDR")]
-    bind: String,
+    #[clap(short = 'b', long, default_value = "0.0.0.0", value_name = "ADDR")]
+    bind:   String,
     /// Publish NFS client statistics
     #[clap(short = 'c')]
     client: bool,
@@ -34,7 +27,7 @@ struct Cli {
     server: bool,
     /// TCP port
     #[clap(short = 'p', long, default_value = "9898")]
-    port: u16
+    port:   u16,
 }
 
 fn main() {
@@ -46,8 +39,10 @@ fn main() {
         (false, true)
     } else {
         Cli::command()
-            .error(clap::error::ErrorKind::InvalidValue,
-                  "client stats are TODO")
+            .error(
+                clap::error::ErrorKind::InvalidValue,
+                "client stats are TODO",
+            )
             .exit()
     };
 
@@ -60,7 +55,7 @@ fn main() {
     let sa = SocketAddr::new(ia, cli.port);
 
     // Start Casper .  Safe because we're still single-threaded.
-    let mut casper = unsafe {Casper::new().unwrap()};
+    let mut casper = unsafe { Casper::new().unwrap() };
     let mut cap_nfs = casper.nfsstat().unwrap();
 
     // Start exporter, which creates additional threads.
@@ -77,64 +72,90 @@ fn main() {
     // prometheus::IntCounter wraps i64 instead of u64.  The loss of precision
     // is unavoidable because Prometheus itself treats all metrics as f64
     // anyway.
-    let bytes = register_gauge_vec!("nfs_nfsd_total_bytes",
-                                        "Total nfsd bytes per operation",
-                                        &["method"])
-        .expect("cannot create gauge");
-    let duration = register_gauge_vec!("nfs_nfsd_total_duration",
+    let bytes = register_gauge_vec!(
+        "nfs_nfsd_total_bytes",
+        "Total nfsd bytes per operation",
+        &["method"]
+    )
+    .expect("cannot create gauge");
+    let duration = register_gauge_vec!(
+        "nfs_nfsd_total_duration",
         "Total nfsd nanoseconds spend processing each operation.  May wrap.",
-        &["method"])
-        .expect("cannot create gauge");
-    let rpcs = register_gauge_vec!("nfs_nfsd_requests_total",
-                                       "Count of server RPCs",
-                                       &["method"])
-        .expect("cannot create gauge");
-    let startcnt = register_gauge!("nfs_nfsd_start_count",
-        "Total number of opreations started since boot")
-        .expect("cannot create gauge");
-    let donecnt = register_gauge!("nfs_nfsd_done_count",
-        "Total number of opreations completed since boot")
-        .expect("cannot create gauge");
-    let busytime = register_gauge!("nfs_nfsd_busytime",
-        "Total time in ns that nfsd was busy with at least one opeartion")
-        .expect("cannot create gauge");
+        &["method"]
+    )
+    .expect("cannot create gauge");
+    let rpcs = register_gauge_vec!(
+        "nfs_nfsd_requests_total",
+        "Count of server RPCs",
+        &["method"]
+    )
+    .expect("cannot create gauge");
+    let startcnt = register_gauge!(
+        "nfs_nfsd_start_count",
+        "Total number of opreations started since boot"
+    )
+    .expect("cannot create gauge");
+    let donecnt = register_gauge!(
+        "nfs_nfsd_done_count",
+        "Total number of opreations completed since boot"
+    )
+    .expect("cannot create gauge");
+    let busytime = register_gauge!(
+        "nfs_nfsd_busytime",
+        "Total time in ns that nfsd was busy with at least one opeartion"
+    )
+    .expect("cannot create gauge");
 
-    let cache_inprog = register_gauge!("nfs_nfsd_cache_in_progress_hits",
-        "Server cache in-progress hits")
-        .expect("cannot create gauge");
+    let cache_inprog = register_gauge!(
+        "nfs_nfsd_cache_in_progress_hits",
+        "Server cache in-progress hits"
+    )
+    .expect("cannot create gauge");
     // Don't publish Idem.  It's always 0
     let cache_nonidempotent = register_gauge!(
         "nfs_nfsd_cache_nonidempotent_hits",
-        "Server cache non-idempotent hits")
-        .expect("cannot create gauge");
-    let cache_misses = register_gauge!("nfs_nfsd_server_cache_misses",
-        "Server cache misses")
-        .expect("cannot create gauge");
-    let cache_size = register_gauge!("nfs_nfsd_server_cache_size",
-        "Server cache size in entries")
-        .expect("cannot create gauge");
-    let cache_tcppeak = register_gauge!("nfs_nfsd_server_cache_tcp_peak",
-        "Peak size of the NFS server's TCP client cache")
-        .expect("cannot create gauge");
+        "Server cache non-idempotent hits"
+    )
+    .expect("cannot create gauge");
+    let cache_misses =
+        register_gauge!("nfs_nfsd_server_cache_misses", "Server cache misses")
+            .expect("cannot create gauge");
+    let cache_size = register_gauge!(
+        "nfs_nfsd_server_cache_size",
+        "Server cache size in entries"
+    )
+    .expect("cannot create gauge");
+    let cache_tcppeak = register_gauge!(
+        "nfs_nfsd_server_cache_tcp_peak",
+        "Peak size of the NFS server's TCP client cache"
+    )
+    .expect("cannot create gauge");
 
-    let clients = register_gauge!("nfs_nfsd_clients",
-        "Number of connected NFS v4.x clients")
+    let clients = register_gauge!(
+        "nfs_nfsd_clients",
+        "Number of connected NFS v4.x clients"
+    )
+    .expect("cannot create gauge");
+    let delegs = register_gauge!(
+        "nfs_nfsd_delegations",
+        "Number of active NFS delegations"
+    )
+    .expect("cannot create gauge");
+    let lock_owner = register_gauge!(
+        "nfs_nfsd_lock_owners",
+        "Number of active NFS lock owners"
+    )
+    .expect("cannot create gauge");
+    let locks = register_gauge!("nfs_nfsd_locks", "Number of active NFS locks")
         .expect("cannot create gauge");
-    let delegs = register_gauge!("nfs_nfsd_delegations",
-        "Number of active NFS delegations")
-        .expect("cannot create gauge");
-    let lock_owner = register_gauge!("nfs_nfsd_lock_owners",
-        "Number of active NFS lock owners")
-        .expect("cannot create gauge");
-    let locks = register_gauge!("nfs_nfsd_locks",
-        "Number of active NFS locks")
-        .expect("cannot create gauge");
-    let open_owner = register_gauge!("nfs_nfsd_open_owners",
-        "Number of active NFS v4.0 Open Owners")
-        .expect("cannot create gauge");
-    let opens = register_gauge!("nfs_nfsd_opens",
-        "Number of NFS v4.x open files?")
-        .expect("cannot create gauge");
+    let open_owner = register_gauge!(
+        "nfs_nfsd_open_owners",
+        "Number of active NFS v4.0 Open Owners"
+    )
+    .expect("cannot create gauge");
+    let opens =
+        register_gauge!("nfs_nfsd_opens", "Number of NFS v4.x open files?")
+            .expect("cannot create gauge");
 
     loop {
         // Will block until exporter receives http request.
@@ -151,27 +172,30 @@ fn main() {
                 };
             }
 
-            bytes.with_label_values(&["Read"])
+            bytes
+                .with_label_values(&["Read"])
                 .set(nfs_stat.bytes.read as f64);
-            bytes.with_label_values(&["Write"])
+            bytes
+                .with_label_values(&["Write"])
                 .set(nfs_stat.bytes.write as f64);
-            duration.with_label_values(&["Read"])
+            duration
+                .with_label_values(&["Read"])
                 .set(nfs_stat.duration.read as f64);
-            duration.with_label_values(&["Write"])
+            duration
+                .with_label_values(&["Write"])
                 .set(nfs_stat.duration.write as f64);
-            duration.with_label_values(&["Commit"])
+            duration
+                .with_label_values(&["Commit"])
                 .set(nfs_stat.duration.commit as f64);
             startcnt.set(nfs_stat.startcnt as f64);
             donecnt.set(nfs_stat.donecnt as f64);
             busytime.set(nfs_stat.busytime as f64);
 
             cache_inprog.set(nfs_stat.server_cache.inprog as f64);
-            cache_nonidempotent.set(
-                nfs_stat.server_cache.nonidem as f64);
+            cache_nonidempotent.set(nfs_stat.server_cache.nonidem as f64);
             cache_misses.set(nfs_stat.server_cache.misses as f64);
             cache_size.set(nfs_stat.server_cache.size as f64);
-            cache_tcppeak.set(
-                nfs_stat.server_cache.tcp_peak as f64);
+            cache_tcppeak.set(nfs_stat.server_cache.tcp_peak as f64);
 
             clients.set(nfs_stat.server_misc.clients as f64);
             delegs.set(nfs_stat.server_misc.delegs as f64);
