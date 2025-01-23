@@ -27,3 +27,6 @@ serde_derive = "1.0"
 
 [build-dependencies]
 bindgen = { version = "0.66.0", features=[] }
+
+[patch.crates-io]
+prometheus_exporter = { git = "https://github.com/AlexanderThaller/prometheus_exporter", rev = "c49efe6" }
