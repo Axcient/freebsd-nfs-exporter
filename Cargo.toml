@@ -23,8 +23,8 @@ clap = { version = "4.1", default-features = true, features = ["cargo", "derive"
 env_logger = "0.11"
 capsicum = { version = "0.4.1", features = ["casper"] }
 log = "0.4.27"
-serde = "1.0.63"
-serde_derive = "1.0"
+serde = "1.0.69"
+serde_derive = "1.0.69"
 prometheus = {version = "0.14.0", default-features = false, features = [] }
 tokio = { version = "^1.25", features = ["macros", "net", "rt"] }
 
