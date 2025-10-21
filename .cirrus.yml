@@ -19,21 +19,24 @@ task:
   env:
     VERSION: 1.77.0
   matrix:
-    - name: FreeBSD 13.3 MSRV
+    - name: FreeBSD 13.5 MSRV
       freebsd_instance:
-        image: freebsd-13-3-release-amd64
-    - name: FreeBSD 14.0 MSRV
+        image: freebsd-13-5-release-amd64
+    - name: FreeBSD 14.3 MSRV
       freebsd_instance:
-        image: freebsd-14-0-release-amd64-ufs
+        image: freebsd-14-3-release-amd64-ufs
+    - name: FreeBSD 15.0-ALPHA4 MSRV
+      freebsd_instance:
+        image: freebsd-15-0-alpha4-amd64-ufs
   << : *COMMON
   before_cache_script: rm -rf $HOME/.cargo/registry/index
 
 task:
-  name: FreeBSD 13.3 nightly
+  name: FreeBSD 14-3 nightly
   env:
     VERSION: nightly
   freebsd_instance:
-    image: freebsd-13-3-release-amd64
+    image: freebsd-14-3-release-amd64-ufs
   << : *COMMON
   clippy_script:
     - . $HOME/.cargo/env
