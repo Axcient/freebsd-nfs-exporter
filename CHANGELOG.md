@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased] - ReleaseDate
+
+- Handle `ECONNABORTED` errors without exiting.  This completely removes
+  dependencies on the unmaintained `prometheus-exporter` and `tiny-http`
+  crates.
+  (#[44](https://github.com/Axcient/freebsd-nfs-exporter/pull/44))
+
 ## [0.4.4] - 2024-05-22
 
 ### Fixed
