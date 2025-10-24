@@ -1,7 +1,6 @@
 // vim: tw=80
 
 use std::{
-    io,
     net::{IpAddr, SocketAddr},
     process::exit,
     sync::{Arc, LazyLock, Mutex},
@@ -56,9 +55,15 @@ struct AppState {
     cap_nfs_agent: Mutex<CapNfsAgent>,
 }
 
-/// Wrapper type that implements IntoResponse for io::Error.
+/// Wrapper type that implements IntoResponse for anyhow::Error
 #[derive(Debug)]
-struct AppError(io::Error);
+struct AppError(anyhow::Error);
+
+impl From<anyhow::Error> for AppError {
+    fn from(e: anyhow::Error) -> Self {
+        Self(e)
+    }
+}
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
@@ -296,7 +301,9 @@ async fn metrics(
     }
     let metric_families = prometheus::gather();
     let encoder = TextEncoder::new();
-    let body = encoder.encode_to_string(&metric_families).expect("TODO");
+    let body = encoder
+        .encode_to_string(&metric_families)
+        .map_err(anyhow::Error::from)?;
     Ok(body)
 }
 
