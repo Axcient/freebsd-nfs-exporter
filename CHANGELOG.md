@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased] - ReleaseDate
+## [0.4.5] - 2025-10-27
 
 - Handle `ECONNABORTED` errors without exiting.  This completely removes
   dependencies on the unmaintained `prometheus-exporter` and `tiny-http`
