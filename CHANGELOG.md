@@ -3,7 +3,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased] - ReleaseDate
+
+### Changed
+
+- Replace the unmaintained `bincode` crate with `bincode-next`.  This raises
+  the MSRV to 1.85.0.
+  (#[48](https://github.com/Axcient/freebsd-nfs-exporter/pull/48))
+
 ## [0.4.5] - 2025-10-27
+
+### Fixed
 
 - Handle `ECONNABORTED` errors without exiting.  This completely removes
   dependencies on the unmaintained `prometheus-exporter` and `tiny-http`

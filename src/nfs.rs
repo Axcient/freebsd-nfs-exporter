@@ -3,7 +3,7 @@ use std::{
     os::raw::c_void,
 };
 
-use serde_derive::{Deserialize, Serialize};
+use bincode_next::{Decode, Encode};
 
 #[allow(non_camel_case_types)]
 #[allow(dead_code)]
@@ -19,17 +19,13 @@ fn bintime_to_ns(bintime: &ffi::bintime) -> u64 {
         .wrapping_add(bintime.frac / (1 << 30) / ((1 << 34) / 1_000_000_000))
 }
 
-#[derive(
-    Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize,
-)]
+#[derive(Clone, Copy, Debug, Default, Decode, Eq, PartialEq, Encode)]
 pub struct PerRW {
     pub read:  u64,
     pub write: u64,
 }
 
-#[derive(
-    Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize,
-)]
+#[derive(Clone, Copy, Debug, Default, Decode, Eq, PartialEq, Encode)]
 pub struct PerRWC {
     pub read:   u64,
     pub write:  u64,
@@ -37,9 +33,7 @@ pub struct PerRWC {
 }
 
 /// Counts of every RPC processed
-#[derive(
-    Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize,
-)]
+#[derive(Clone, Copy, Debug, Default, Decode, Eq, PartialEq, Encode)]
 pub struct PerRPC {
     pub access:          u64,
     pub backchannelctrl: u64,
@@ -109,9 +103,7 @@ pub struct PerRPC {
 }
 
 /// Server cache statistics
-#[derive(
-    Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize,
-)]
+#[derive(Clone, Copy, Debug, Default, Decode, Eq, PartialEq, Encode)]
 pub struct ServerCache {
     pub inprog:   u64,
     pub nonidem:  u64,
@@ -121,9 +113,7 @@ pub struct ServerCache {
 }
 
 /// Miscellaneous NFS server stats
-#[derive(
-    Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize,
-)]
+#[derive(Clone, Copy, Debug, Default, Decode, Eq, PartialEq, Encode)]
 pub struct ServerMisc {
     /// Number of currently connected NFS v4.0+ clients?
     pub clients:    u64,
@@ -134,9 +124,7 @@ pub struct ServerMisc {
     pub opens:      u64,
 }
 
-#[derive(
-    Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize,
-)]
+#[derive(Clone, Copy, Debug, Default, Decode, Eq, PartialEq, Encode)]
 pub struct NfsStat {
     /// Total time in ns that nfsd was busy with at least one operation.
     /// May wrap!
