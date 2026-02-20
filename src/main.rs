@@ -7,21 +7,21 @@ use std::{
 };
 
 use axum::{
+    Router,
     extract::{ConnectInfo, State},
     http::StatusCode,
     response::{IntoResponse, Response},
     routing::get,
-    Router,
 };
 use capsicum::casper::Casper;
-use clap::{crate_version, CommandFactory, Parser};
+use clap::{CommandFactory, Parser, crate_version};
 use env_logger::{Builder, Env};
 use prometheus::{
-    register_gauge,
-    register_gauge_vec,
     Gauge,
     GaugeVec,
     TextEncoder,
+    register_gauge,
+    register_gauge_vec,
 };
 use tokio::net::TcpListener;
 
