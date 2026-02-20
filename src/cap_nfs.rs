@@ -1,9 +1,15 @@
 //! A Casper service that provides NFS stats to capsicumized programs.
 use std::{ffi::CStr, io};
 
+use bincode_next::config;
 use capsicum::casper::{self, NvError, NvFlag, NvList, ServiceRegisterFlags};
 
 use crate::nfs;
+
+const BINCODE_CONFIG: config::Configuration<
+    config::LittleEndian,
+    config::Fixint,
+> = config::standard().with_fixed_int_encoding();
 
 struct CapNfs {}
 impl casper::Service for CapNfs {
@@ -19,7 +25,10 @@ impl casper::Service for CapNfs {
 
         let nfsstat = nfs::collect()?;
         nvout
-            .insert_binary("nfsstat", &bincode::serialize(&nfsstat).unwrap())
+            .insert_binary(
+                "nfsstat",
+                &bincode_next::encode_to_vec(nfsstat, BINCODE_CONFIG).unwrap(),
+            )
             .unwrap();
         Ok(())
     }
@@ -37,7 +46,11 @@ impl CapNfsAgent {
         invl.insert_string("cmd", "nfsstat").unwrap();
         let onvl = self.xfer_nvlist(invl)?;
         match onvl.get_binary("nfsstat") {
-            Ok(Some(sl)) => Ok(bincode::deserialize(sl).unwrap()),
+            Ok(Some(sl)) => {
+                Ok(bincode_next::borrow_decode_from_slice(sl, BINCODE_CONFIG)
+                    .unwrap()
+                    .0)
+            }
             Ok(None) => panic!("zygote did not return the expected value"),
             Err(NvError::NativeError(e)) => {
                 Err(io::Error::from_raw_os_error(e))

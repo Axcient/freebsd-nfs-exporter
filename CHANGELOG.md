@@ -3,7 +3,23 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased] - ReleaseDate
+
+### Changed
+
+- Replace the unmaintained `bincode` crate with `bincode-next`.  This raises
+  the MSRV to 1.85.0.
+  (#[48](https://github.com/Axcient/freebsd-nfs-exporter/pull/48))
+
+### Fixed
+
+- Updated the `bytes` dependency to fix an integer overflow bug in it.
+  (#[RUSTSEC-2026-0007](https://github.com/advisories/GHSA-434x-w66g-qw3r))
+  (#[48](https://github.com/Axcient/freebsd-nfs-exporter/pull/48))
+
 ## [0.4.5] - 2025-10-27
+
+### Fixed
 
 - Handle `ECONNABORTED` errors without exiting.  This completely removes
   dependencies on the unmaintained `prometheus-exporter` and `tiny-http`
