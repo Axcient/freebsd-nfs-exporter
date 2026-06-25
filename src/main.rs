@@ -26,9 +26,20 @@ use prometheus::{
 use tokio::net::TcpListener;
 
 mod cap_nfs;
+#[cfg(target_pointer_width = "64")]
+#[allow(non_camel_case_types)]
+#[allow(dead_code)]
+mod ffi64;
 mod nfs;
-
+#[cfg(target_pointer_width = "64")]
+use ffi64 as ffi;
+#[cfg(target_pointer_width = "32")]
+#[allow(non_camel_case_types)]
+#[allow(dead_code)]
+mod ffi32;
 use cap_nfs::{CapNfsAgent, CasperExt};
+#[cfg(target_pointer_width = "32")]
+use ffi32 as ffi;
 
 #[derive(Parser, Clone, Debug)]
 #[clap(version = crate_version!())]

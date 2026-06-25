@@ -5,13 +5,7 @@ use std::{
 
 use bincode_next::{Decode, Encode};
 
-#[allow(non_camel_case_types)]
-#[allow(dead_code)]
-// https://github.com/rust-lang/rust-bindgen/issues/1651
-#[allow(deref_nullptr)]
-mod ffi {
-    include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
-}
+use crate::ffi;
 
 fn bintime_to_ns(bintime: &ffi::bintime) -> u64 {
     (bintime.sec as u64)
