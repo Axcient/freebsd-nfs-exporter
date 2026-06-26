@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased] - ReleaseDate
+
+### Changed
+
+- bindgen is no longer required at build time.
+  (#[51](https://github.com/Axcient/freebsd-nfs-exporter/pull/51))
+
 ## [0.4.6] - 2026-02-20
 
 ### Changed
