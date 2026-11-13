@@ -55,6 +55,7 @@ fn stable_bindings() {
     let output = Command::new("difft")
         .arg("--exit-code")
         .arg("--ignore-comments")
+        .arg("--override=*:Rust")
         .arg(format!("{}/src/{}", root_dir, ffi_fname))
         .arg(tf.path())
         .stderr(Stdio::inherit())
